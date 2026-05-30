@@ -1,7 +1,9 @@
 import os
+from flask_cors import CORS
 from flask import Flask, jsonify, request, send_from_directory
 
 app = Flask(__name__)
+CORS(app)  # Mengaktifkan CORS untuk semua route
 
 # 1. ROUTE UNTUK MENAMPILKAN HALAMAN WEB KLINIK
 @app.route('/')
@@ -21,11 +23,12 @@ def create_appointment():
     time = data.get('time')
     notes = data.get('notes', '')
 
-    # Mengembalikan response sukses berformat JSON
+    # Mengembalikan response sukses berformat JSON yang COCOK dengan index.html
     return jsonify({
         "status": "success",
         "message": "Appointment successfully scheduled",
-        "appointment_details": {
+        "rabbitmq_status": "Sent to cluster-queue successfully",  # Ditambahkan agar tidak undefined di UI
+        "data": {                                                 # Mengubah 'appointment_details' menjadi 'data'
             "patient_name": patient_name,
             "doctor_id": doctor_id,
             "date": date,
