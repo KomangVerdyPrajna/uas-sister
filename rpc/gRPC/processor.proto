@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+service DataProcessor {
+  // The Remote Procedure
+  rpc TransformText (RawData) returns (ProcessedData) {}
+}
+
+message RawData {
+  string input_text = 1;
+}
+
+message ProcessedData {
+  string output_text = 2;
+  int32 character_count = 3;
+}

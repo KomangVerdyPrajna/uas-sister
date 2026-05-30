@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klinik Terdistribusi - Appointment Booking</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --background: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 30px 20px;
+            background-color: var(--background);
+            color: var(--text-main);
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header-section h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0 0 8px 0;
+        }
+
+        .header-section p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            gap: 25px;
+        }
+
+        .panel {
+            flex: 1;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        .panel:hover {
+            transform: translateY(-2px);
+        }
+
+        .panel-user { border-top: 6px solid var(--primary); }
+        .panel-admin { border-top: 6px solid var(--success); }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            font-family: inherit;
+            font-size: 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            box-sizing: border-box;
+            background-color: #fafafa;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            height: 70px;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .status-box {
+            background: #f1f5f9;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .node-item {
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            margin-right: 10px;
+            display: inline-block;
+        }
+
+        .leader-badge {
+            background-color: #fee2e2;
+            color: var(--danger);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--text-muted);
+        }
+
+        #log-container {
+            background: #0f172a;
+            color: #38bdf8;
+            padding: 18px;
+            border-radius: 12px;
+            height: 220px;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .success-banner {
+            background-color: #ecfdf5;
+            color: #065f46;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #a7f3d0;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-section">
+        <h1>Platform Janji Temu Dokter</h1>
+        <p>Sistem Basis Data Terdistribusi dengan Sinkronisasi Kluster & Message Broker</p>
+    </div>
+    
+    <div class="container">
+        
+        <div class="panel panel-user">
+            <h2>Buat Appointment Baru</h2>
+            <div class="form-group">
+                <label for="patientName">Nama Pasien</label>
+                <input type="text" id="patientName" placeholder="Contoh: Budi Santoso" required>
+            </div>
+            <div class="form-group">
+                <label for="doctorId">Pilih Dokter & Spesialisasi</label>
+                <select id="doctorId" required>
+                    <option value="">-- Pilih Dokter --</option>
+                    <option value="D001">Dr. Andi Pratama (Umum)</option>
+                    <option value="D002">Dr. Sari Dewi (Gigi)</option>
+                    <option value="D003">Dr. Budi Santoso (Mata)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="appointmentDate">Tanggal Kunjungan</label>
+                <input type="date" id="appointmentDate" required>
+            </div>
+            <div class="form-group">
+                <label for="appointmentTime">Jam Kunjungan</label>
+                <select id="appointmentTime" required>
+                    <option value="">-- Pilih Jam --</option>
+                    <option value="08:00">08:00</option>
+                    <option value="09:00">09:00</option>
+                    <option value="10:00">10:00</option>
+                    <option value="13:00">13:00</option>
+                    <option value="14:00">14:00</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="notes">Catatan Keluhan</label>
+                <textarea id="notes" placeholder="Contoh: Kontrol rutin / Sakit gigi mendadak"></textarea>
+            </div>
+            <button id="btnSubmit" type="button">Konfirmasi Janji Temu</button>
+            <div id="pesanSukses"></div>
+        </div>
+
+        <div class="panel panel-admin">
+            <h2>Panel Monitoring Kluster</h2>
+            
+            <div class="form-group">
+                <h4>Status Ring-Based Leader Election</h4>
+                <div class="status-box">
+                    <strong>Status Node aktif dalam Ring:</strong>
+                    <div class="node-item"><span class="status-dot"></span> Node 1 (Port: 8000) <span class="leader-badge">LEADER 👑</span></div>
+                    <div class="node-item"><span class="status-dot"></span> Node 2 (Port: 8001)</div>
+                    <div class="node-item"><span class="status-dot"></span> Node 3 (Port: 8002)</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <h4>Broker Pesan Terdistribusi (RabbitMQ)</h4>
+                <div id="log-container">
+                    <span style="color: #64748b;">[SYSTEM] Menunggu antrean payload masuk...</span><br>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.getElementById('btnSubmit').addEventListener('click', function() {
+            const patientName = document.getElementById('patientName').value;
+            const doctorId = document.getElementById('doctorId').value;
+            const date = document.getElementById('appointmentDate').value;
+            const time = document.getElementById('appointmentTime').value;
+            const notes = document.getElementById('notes').value || "-";
+            
+            // 1. Validasi Input di Sisi Client
+            if(!patientName || !doctorId || !date || !time) {
+                alert("Harap lengkapi semua data form sebelum konfirmasi!");
+                return;
+            }
+            
+            // 2. Bungkus Data ke Objek JSON Sesuai Parameter Sistem
+            const payload = {
+                patient_name: patientName,
+                doctor_id: doctorId,
+                date: date,
+                time: time,
+                notes: notes
+            };
+
+            // 3. Kirim Data Menggunakan Fetch API ke Endpoint /appointments Python Backend (Port 8000)
+            fetch('http://localhost:8000/appointments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Gagal merespon, periksa server backend.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if(data.status === "success") {
+                    // Tampilkan spanduk sukses berwarna hijau estetik
+                    document.getElementById('pesanSukses').innerHTML = `
+                        <div class="success-banner">
+                            🎉 Antrean berhasil disimpan & diteruskan ke RabbitMQ Cluster!
+                        </div>
+                    `;
+                    
+                    // Cetak log pengiriman pesan RabbitMQ yang asli ke kotak hitam
+                    const logContainer = document.getElementById('log-container');
+                    const waktuLog = new Date().toLocaleTimeString();
+                    
+                    logContainer.innerHTML += `<br><span style="color: #10b981;">[${waktuLog}] [RabbitMQ Status]: ${data.rabbitmq_status}</span><br>` +
+                                              `<span style="color: #e2e8f0;">Payload terkirim:</span><br>` +
+                                              `<pre style="color: #38bdf8; margin: 0; font-family: inherit;">${JSON.stringify(data.data, null, 2)}</pre>`;
+                    
+                    // Otomatis scroll log ke bawah
+                    logContainer.scrollTop = logContainer.scrollHeight;
+
+                    // Bersihkan kolom form setelah sukses agar bisa diisi data baru
+                    document.getElementById('patientName').value = '';
+                    document.getElementById('doctorId').value = '';
+                    document.getElementById('appointmentDate').value = '';
+                    document.getElementById('appointmentTime').value = '';
+                    document.getElementById('notes').value = '';
+                } else {
+                    alert("Gagal memproses data di server: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Gagal terhubung ke Backend Python! Pastikan program 'python order_service.py' sudah dinyalakan di terminal.");
+            });
+        });
+    </script>
+</body>
+</html>
