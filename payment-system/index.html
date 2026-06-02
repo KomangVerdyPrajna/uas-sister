@@ -271,17 +271,19 @@
 
         <div class="form-group">
           <h4>Status Ring-Based Leader Election</h4>
-          <div class="status-box">
+          <div class="status-box" id="cluster-status-box">
             <strong>Status Node aktif dalam Ring:</strong>
-            <div class="node-item">
-              <span class="status-dot"></span> Node 1 (Port: 8000)
-              <span class="leader-badge">LEADER 👑</span>
+            <div class="node-item" id="status-node-1">
+              <span class="status-dot" style="background-color: var(--text-muted)"></span> Node 1 (Port: 9001)
+              <span class="leader-badge" style="display:none">LEADER 👑</span>
             </div>
-            <div class="node-item">
-              <span class="status-dot"></span> Node 2 (Port: 8001)
+            <div class="node-item" id="status-node-2">
+              <span class="status-dot" style="background-color: var(--text-muted)"></span> Node 2 (Port: 9002)
+              <span class="leader-badge" style="display:none">LEADER 👑</span>
             </div>
-            <div class="node-item">
-              <span class="status-dot"></span> Node 3 (Port: 8002)
+            <div class="node-item" id="status-node-3">
+              <span class="status-dot" style="background-color: var(--text-muted)"></span> Node 3 (Port: 9003)
+              <span class="leader-badge" style="display:none">LEADER 👑</span>
             </div>
           </div>
         </div>
@@ -389,6 +391,41 @@
               );
             });
         });
+
+        // 4. Polling Status Cluster
+        function updateClusterStatus() {
+            fetch(`${window.location.origin}/cluster-status`)
+                .then(res => res.json())
+                .then(data => {
+                    const activeNodes = data.active_nodes || [];
+                    const leaderId = data.leader_id;
+
+                    for(let i=1; i<=3; i++) {
+                        const nodeName = `node-${i}`;
+                        const el = document.getElementById(`status-node-${i}`);
+                        if(!el) continue;
+                        
+                        const dot = el.querySelector('.status-dot');
+                        const badge = el.querySelector('.leader-badge');
+                        
+                        if (activeNodes.includes(nodeName)) {
+                            dot.style.backgroundColor = "var(--success)";
+                        } else {
+                            dot.style.backgroundColor = "var(--danger)";
+                        }
+
+                        if (leaderId == i) {
+                            badge.style.display = "inline-block";
+                        } else {
+                            badge.style.display = "none";
+                        }
+                    }
+                })
+                .catch(err => console.error("Error fetching cluster status:", err));
+        }
+
+        setInterval(updateClusterStatus, 2000);
+        updateClusterStatus();
     </script>
   </body>
 </html>
